@@ -28,33 +28,32 @@ download_data = BashOperator(
 
 unzip_data =  BashOperator(
     task_id = 'unzip',
-    bash_command = 'tar -zxvf tolldata.tgz',
+    bash_command = 'tar -xvzf /home/project/airflow/dags/tolldata.tgz -C /home/project/airflow/dags',
     dag = dag,
     )
 
 csv_data =  BashOperator(
     task_id = 'extract_data_from_csv',
-    bash_command = 'cut -d "," -f1-4  vehicle-data.csv >  csv_data.csv',
+    bash_command = 'cut -d "," -f1-4  /home/project/airflow/vehicle-data.csv >  /home/project/airflow/csv_data.csv',
     dag = dag,
 )
 
 
 tsv_data =  BashOperator(
     task_id = 'extract_data_from_tsv',
-    bash_command = 'tr $"\t" "," <  tollplaza-data.tsv | cut -d "," -f5-7 >  tsv_data.csv',
+    bash_command = 'tr $"\t" "," <  /home/project/airflow/tollplaza-data.tsv | cut -d "," -f5-7 > /home/project/airflow/tsv_data.csv',
     dag = dag,
 )
 
 fixed_width_data = BashOperator(
     task_id = 'extract_data_from_fixed_width',
-    bash_command = 'tr -s " " "," <  payment-data.txt | cut -d "," -f10-11 >  fixed_width_data.csv',
+    bash_command = 'tr -s " " "," <  /home/project/airflow/payment-data.txt | cut -d "," -f10-11 > /home/project/airflow/fixed_width_data.csv',
     dag = dag,
 )
 
 consolidate_data = BashOperator(
     task_id = 'combine_data',
-    bash_command = 'paste  csv_data.csv  tsv_data.csv  fixed_width_data.csv >  extracted_data.csv',
+    bash_command = 'paste  /home/project/airflow/csv_data.csv  /home/project/airflow/tsv_data.csv  /home/project/airflow/fixed_width_data.csv >  /home/project/airflow/extracted_data.csv',
     dag = dag,
 )
-
-download_data >> unzip_data >> [csv_data,tsv_data,fixed_width_data] >> consolidate_data
+unzip_data >> [csv_data,tsv_data,fixed_width_data] >> consolidate_data
